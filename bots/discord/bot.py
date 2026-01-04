@@ -11,6 +11,11 @@ API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
 
 GUILD_ID = 1457316487134973995
 
+
+def split_message(text, limit=2000):
+    return [text[i:i+limit] for i in range(0, len(text), limit)]
+
+
 class AuraClient(discord.Client):
     def __init__(self):
         intents = discord.Intents.default()
@@ -43,10 +48,12 @@ async def ask(interaction: discord.Interaction, question: str):
             }
         )
 
-    await interaction.followup.send(
-        f"{res.json()['response']}\n\n"
-        "Interested in AI bots or automation for your use case? Use /contact"
-    )
+    parts = split_message(res.json()["response"])
+
+    await interaction.followup.send("**Aura response:**\n" + parts[0])
+
+    for part in parts[1:]:
+        await interaction.followup.send(part)
 
 @client.tree.command(name="contact", description="Contact the developer of Aura")
 async def contact(interaction: discord.Interaction):
