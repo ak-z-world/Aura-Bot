@@ -76,12 +76,6 @@ async def contact(interaction: discord.Interaction):
         inline=False
     )
 
-    embed.add_field(
-        name="Portfolio",
-        value="• GitHub: https://github.com/ak-z-world",
-        inline=False
-    )
-
     embed.set_footer(
         text="Live cloud demo • Custom solutions available on request"
     )
