@@ -43,6 +43,70 @@ async def ask(interaction: discord.Interaction, question: str):
             }
         )
 
-    await interaction.followup.send(res.json()["response"])
+    await interaction.followup.send(
+        f"{res.json()['response']}\n\n"
+        "Interested in AI bots or automation for your use case? Use /contact"
+    )
+
+@client.tree.command(name="contact", description="Contact the developer of Aura")
+async def contact(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="Aura — AI Systems & Automation",
+        description=(
+            "Aura is a live AI systems and automation demo.\n\n"
+            "We build and support:\n"
+            "• Custom AI & social-media bots (Discord, WhatsApp, etc.)\n"
+            "• AI-powered chatbots and assistants\n"
+            "• Workflow & process automation\n"
+            "• Backend systems and API development\n\n"
+            "Open to collaborations, projects, and custom development."
+        ),
+        color=0x5865F2
+    )
+
+    embed.add_field(
+        name="Primary Contact",
+        value="• Discord DM: **@akzworld**",
+        inline=False
+    )
+
+    embed.add_field(
+        name="Professional",
+        value="• Email: **sivaarun10@gmail.com**",
+        inline=False
+    )
+
+    embed.add_field(
+        name="Portfolio",
+        value="• GitHub: https://github.com/ak-z-world",
+        inline=False
+    )
+
+    embed.set_footer(
+        text="Live cloud demo • Custom solutions available on request"
+    )
+
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+@client.tree.command(name="about", description="About Aura")
+async def about(interaction: discord.Interaction):
+    await interaction.response.send_message(
+        "Aura — AI Systems & Research Initiative\n\n"
+        "Aura was founded and built by Arun Kumar.\n\n"
+        "Aura is not just a Discord bot. It is a growing initiative focused on designing,"
+        "building, and demonstrating intelligent AI systems, automation tools, and"
+        "real-world applications using modern AI technologies.\n\n"
+        "Alongside applied development, Aura has begun early-stage exploratory research"
+        "into quantum-inspired concepts for language models. This research is conceptual"
+        "in nature and runs entirely on classical computing infrastructure.\n\n"
+        "Through Aura, we work on:\n"
+        "• Custom AI & social-media bots\n"
+        "• AI-driven automation systems\n"
+        "• Backend & API engineering\n"
+        "• Research-oriented AI experimentation\n\n"
+        "This bot serves as a live demonstration of Aura’s applied engineering work.",
+        ephemeral=True
+    )
 
 client.run(DISCORD_TOKEN)
+

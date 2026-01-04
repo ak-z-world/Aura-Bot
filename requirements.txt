@@ -7,3 +7,5 @@ httpx==0.26.0
 python-dotenv==1.0.1
 
 pydantic==2.6.1
+
+groq==0.8.3

@@ -1,11 +1,11 @@
 from fastapi import APIRouter
 from app.schemas import ChatRequest, ChatResponse
 from app.llm.mock import MockLLM
-from app.llm.hf_llm import HuggingFaceLLM
+from app.llm.groq_llm import GroqLLM
 
 router = APIRouter()
 
-llm = HuggingFaceLLM()
+llm = GroqLLM()
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
