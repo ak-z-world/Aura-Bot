@@ -40,7 +40,7 @@ async def ask(interaction: discord.Interaction, question: str):
     await interaction.response.defer(thinking=True)
 
     try:
-        async with httpx.AsyncClient(timeout=httpx.Timeout(90.0)) as http:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(20.0)) as http:
             res = await http.post(
                 f"{API_URL}/api/chat",
                 json={
@@ -50,31 +50,45 @@ async def ask(interaction: discord.Interaction, question: str):
             )
 
         if res.status_code != 200:
-            await interaction.followup.send(
-                "Aura backend returned an error. Please try again."
-            )
+            try:
+                await interaction.followup.send(
+                    "Aura backend returned an error."
+                )
+            except discord.errors.NotFound:
+                pass
             return
 
-        data = res.json()
-
-        if "response" not in data:
-            await interaction.followup.send(
-                "Aura backend response was invalid."
-            )
+        try:
+            data = res.json()
+        except Exception:
+            try:
+                await interaction.followup.send(
+                    "Aura backend returned invalid data."
+                )
+            except discord.errors.NotFound:
+                pass
             return
 
-        parts = split_message(data["response"])
+        response_text = data.get("response")
+        if not response_text:
+            try:
+                await interaction.followup.send(
+                    "Aura backend response was empty."
+                )
+            except discord.errors.NotFound:
+                pass
+            return
 
-        await interaction.followup.send("**Aura response:**")
-
-        for part in parts:
-            await interaction.followup.send(part)
+        try:
+            await interaction.followup.send("**Aura response:**")
+            for part in split_message(response_text):
+                await interaction.followup.send(part)
+        except discord.errors.NotFound:
+            pass
 
     except Exception as e:
-        print(f"Discord /ask error: {e}")
-        await interaction.followup.send(
-            "Aura encountered an internal error. Please try again shortly."
-        )
+        print(f"Discord /ask error (interaction expired): {e}")
+        # DO NOT respond here — interaction is gone
 
 @client.tree.command(name="contact", description="Contact the developer of Aura")
 async def contact(interaction: discord.Interaction):
