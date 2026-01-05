@@ -65,9 +65,9 @@ async def ask(interaction: discord.Interaction, question: str):
 
         parts = split_message(data["response"])
 
-        await interaction.followup.send("**Aura response:**\n" + parts[0])
+        await interaction.followup.send("**Aura response:**")
 
-        for part in parts[1:]:
+        for part in parts:
             await interaction.followup.send(part)
 
     except Exception as e:
