@@ -39,21 +39,42 @@ async def on_ready():
 async def ask(interaction: discord.Interaction, question: str):
     await interaction.response.defer(thinking=True)
 
-    async with httpx.AsyncClient(timeout=httpx.Timeout(90.0)) as http:
-        res = await http.post(
-            f"{API_URL}/api/chat",
-            json={
-                "prompt": question,
-                "user_id": str(interaction.user.id)
-            }
+    try:
+        async with httpx.AsyncClient(timeout=httpx.Timeout(90.0)) as http:
+            res = await http.post(
+                f"{API_URL}/api/chat",
+                json={
+                    "prompt": question,
+                    "user_id": str(interaction.user.id)
+                }
+            )
+
+        if res.status_code != 200:
+            await interaction.followup.send(
+                "Aura backend returned an error. Please try again."
+            )
+            return
+
+        data = res.json()
+
+        if "response" not in data:
+            await interaction.followup.send(
+                "Aura backend response was invalid."
+            )
+            return
+
+        parts = split_message(data["response"])
+
+        await interaction.followup.send("**Aura response:**\n" + parts[0])
+
+        for part in parts[1:]:
+            await interaction.followup.send(part)
+
+    except Exception as e:
+        print(f"Discord /ask error: {e}")
+        await interaction.followup.send(
+            "Aura encountered an internal error. Please try again shortly."
         )
-
-    parts = split_message(res.json()["response"])
-
-    await interaction.followup.send("**Aura response:**\n" + parts[0])
-
-    for part in parts[1:]:
-        await interaction.followup.send(part)
 
 @client.tree.command(name="contact", description="Contact the developer of Aura")
 async def contact(interaction: discord.Interaction):
